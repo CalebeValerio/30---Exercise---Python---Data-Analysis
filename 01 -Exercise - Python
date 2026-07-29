@@ -1,0 +1,26 @@
+------------------------------------------------------------------------
+ - Data Cleaning using python
+ - Read files
+ - Write File
+------------------------------------------------------------------------
+
+import pandas as pd
+
+
+df = pd.read_excel('dataset_pratica_limpeza_python.xlsx')df.columns = df.columns.str.strip().str.lower
+
+
+
+
+df = df.dropna(subset=['name'])
+df['city'] = df['city'].fillna('Not_Informed')
+df['age'] = df['age'].fillna(0)
+df = df.drop_duplicates(subset=['id'])
+df['city'] = df['city'].str.lower()df['name'] = df['name'].str.lower()
+df['product'] = df['product'].str.lower()
+df['product'] = df['product'].str.replace(' ', '_')
+df['city'] = df['city'].str.replace(' ', '_')
+df['city'] = df['city'].replace('são paulo', 'sao paulo')df['city'] = df['city'].replace('uberlândia', 'uberlandia')
+df['price'] = df['price'].str.replace('$', '')df['price'] = df['price'].str.replace(',', '')df['price'] = df['price'].astype(float)df['age'] = df['age'].astype(int)df['price'] = df['price'].round(3)df['date'] = pd.to_datetime(df['date'], format='mixed', dayfirst=True)
+
+
