@@ -24,4 +24,11 @@ df['city'] = df['city'].str.replace(' ', '_')
 df['city'] = df['city'].replace('são paulo', 'sao paulo')df['city'] = df['city'].replace('uberlândia', 'uberlandia')
 df['price'] = df['price'].str.replace('$', '')df['price'] = df['price'].str.replace(',', '')df['price'] = df['price'].astype(float)df['age'] = df['age'].astype(int)df['price'] = df['price'].round(3)df['date'] = pd.to_datetime(df['date'], format='mixed', dayfirst=True)
 
+df = df.sort_index()
+df = df.sort_values(by=['price', 'age'], ascending=[False, True])
+df = df.reset_index(drop=True)
+df['id'] = df.index + 1
+
+
+df = df.groupby('city').agg(     total_Price = ('price', 'sum'), max_price = ('price', 'max'), min_price = ('price', 'min'), avg_price = ('price', 'mean'), total_products = ('product', 'count')).reset_index()#df = df.sort_values(by='price', ascending=False)
 
