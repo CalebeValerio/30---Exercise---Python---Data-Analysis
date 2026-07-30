@@ -1,34 +1,51 @@
 ------------------------------------------------------------------------
- - Data Cleaning using python
- - Read files
- - Write File
+ - Python Data Cleaning
+ - File Input/Output (I/O) Processing
+ - Data Aggregation & Structuring
 ------------------------------------------------------------------------
+
+
 
 import pandas as pd
 
-
 df = pd.read_excel('dataset_pratica_limpeza_python.xlsx')
-df.columns = df.columns.str.strip().str.lower().str.replace('','_')
 
-
-
+df.columns = df.columns.str.strip().str.lower().str.replace(' ', '_')
 
 df = df.dropna(subset=['name'])
 df['city'] = df['city'].fillna('Not_Informed')
 df['age'] = df['age'].fillna(0)
 df = df.drop_duplicates(subset=['id'])
-df['city'] = df['city'].str.lower()df['name'] = df['name'].str.lower()
+
+df['city'] = df['city'].str.lower()
+df['name'] = df['name'].str.lower()
 df['product'] = df['product'].str.lower()
 df['product'] = df['product'].str.replace(' ', '_')
 df['city'] = df['city'].str.replace(' ', '_')
-df['city'] = df['city'].replace('são paulo', 'sao paulo')df['city'] = df['city'].replace('uberlândia', 'uberlandia')
-df['price'] = df['price'].str.replace('$', '')df['price'] = df['price'].str.replace(',', '')df['price'] = df['price'].astype(float)df['age'] = df['age'].astype(int)df['price'] = df['price'].round(3)df['date'] = pd.to_datetime(df['date'], format='mixed', dayfirst=True)
+df['city'] = df['city'].replace({'são_paulo': 'sao_paulo', 'uberlândia': 'uberlandia'})
 
-df = df.sort_index()
+df['price'] = df['price'].astype(str).str.replace('$', '', regex=False).str.replace(',', '', regex=False)
+df['price'] = df['price'].astype(float).round(3)
+df['age'] = df['age'].astype(int)
+df['date'] = pd.to_datetime(df['date'], format='mixed', dayfirst=True)
+
 df = df.sort_values(by=['price', 'age'], ascending=[False, True])
 df = df.reset_index(drop=True)
 df['id'] = df.index + 1
 
+df = df.groupby('city').agg(
+    total_price=('price', 'sum'),
+    max_price=('price', 'max'),
+    min_price=('price', 'min'),
+    avg_price=('price', 'mean'),
+    total_products=('product', 'count')
+).reset_index()
 
-df = df.groupby('city').agg(     total_Price = ('price', 'sum'), max_price = ('price', 'max'), min_price = ('price', 'min'), avg_price = ('price', 'mean'), total_products = ('product', 'count')).reset_index()#df = df.sort_values(by='price', ascending=False)
+df.to_excel('Cleaned_Data.xlsx', index=False)
 
+
+
+
+------------------------------------------------------------------------------------
+ - Pipeline built to process, clean, and aggregate raw data extracted from flat files.
+------------------------------------------------------------------------------------
