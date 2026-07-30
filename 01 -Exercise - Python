@@ -7,7 +7,8 @@
 import pandas as pd
 
 
-df = pd.read_excel('dataset_pratica_limpeza_python.xlsx')df.columns = df.columns.str.strip().str.lower
+df = pd.read_excel('dataset_pratica_limpeza_python.xlsx')
+df.columns = df.columns.str.strip().str.lower
 
 
 
