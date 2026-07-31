@@ -1,0 +1,49 @@
+import pandas as pd
+import requests
+
+# 1. Get the data from a API
+response = requests.get('https://jsonplaceholder.typicode.com/users')
+data_json = response.json()
+df = pd.DataFrame(data_json)
+
+# 2. Standardize names, usernames, and email addresses
+df['name'] = df['name'].str.lower()
+df['username'] = df['username'].str.lower()
+df['email'] = df['email'].str.lower()
+
+# 3. Clean address column (remove JSON braces and single quotes)
+df['address'] = df['address'].astype(str).str.lower()
+df['address'] = (
+    df['address']
+    .str.replace('{', '', regex=False)
+    .str.replace('}', '', regex=False)
+    .str.replace("'", '', regex=False)
+)
+
+# 4. Normalize phone numbers
+df['phone'] = df['phone'].str.lower()
+df['phone'] = (
+    df['phone']
+    .str.replace('x', '-', regex=False)
+    .str.replace(' ', '', regex=False)
+    .str.replace('(', '', regex=False)
+    .str.replace(')', '', regex=False)
+    .str.replace('.', '-', regex=False)
+)
+
+# 5. Clean website domain strings
+df['website'] = df['website'].str.lower().str.strip()
+
+# 6. Clean company column (remove JSON braces and single quotes)
+df['company'] = df['company'].astype(str).str.lower()
+df['company'] = (
+    df['company']
+    .str.replace('{', '', regex=False)
+    .str.replace('}', '', regex=False)
+    .str.replace("'", '', regex=False)
+)
+
+# 7. Export the cleaned DataFrame to Excel without the default index
+df.to_excel('dados_excel.xlsx', index=False)
+
+print("Data cleaning completed. Cleaned dataset successfully exported to 'dados_excel.xlsx'!")
